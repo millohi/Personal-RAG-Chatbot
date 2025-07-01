@@ -13,7 +13,7 @@ from ragbot.ragbot import RAGBot
 
 #print(load_dotenv())
 
-allowed_firmen = os.getenv("ALLOWED_FIRMEN")
+allowed_firmen = os.getenv("ALLOWED_CLIENTS")
 # allowed_firmen = "testfirma1,testfirma2"
 allowed_firmen_set = set(f.strip().lower() for f in allowed_firmen.split(",") if f.strip())
 
