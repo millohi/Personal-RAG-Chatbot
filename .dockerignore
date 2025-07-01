@@ -1,0 +1,20 @@
+# Virtuelle Environments
+.venv*
+env
+.env
+__pycache__
+*.pyc
+
+# Versionskontrolle
+.git
+.gitignore
+
+# Daten
+local_data
+*.csv
+*.mp4
+*.log
+
+# Sonstiges
+.DS_Store
+database
