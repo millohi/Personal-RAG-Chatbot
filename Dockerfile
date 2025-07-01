@@ -6,6 +6,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Requirements kopieren und installieren
+RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -16,4 +17,4 @@ COPY . .
 EXPOSE 8000
 
 # Startbefehl
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-exclude", ".venv", "--reload_exclude", "database"]
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-exclude", ".venv", "--reload-exclude", "database"]

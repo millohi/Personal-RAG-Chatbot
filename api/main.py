@@ -10,11 +10,13 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from ragbot.ragbot import RAGBot
-
+#from dotenv import load_dotenv
 #print(load_dotenv())
 
 allowed_firmen = os.getenv("ALLOWED_CLIENTS")
-# allowed_firmen = "testfirma1,testfirma2"
+print(allowed_firmen)
+if not allowed_firmen:
+    allowed_firmen = "testfirma1"
 allowed_firmen_set = set(f.strip().lower() for f in allowed_firmen.split(",") if f.strip())
 
 # ------------------- #
