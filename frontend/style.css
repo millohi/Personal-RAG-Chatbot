@@ -1,0 +1,111 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f3e9df;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+
+/* Sticky Eingabe am unteren Rand */
+.input-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+#user-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  padding: 10px 16px;
+  border: none;
+  background-color: #5a4c4c;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover:enabled {
+  background-color: #3f3636;
+}
+
+button:disabled {
+  background-color: #939393;
+  color: #111;
+}
+
+
+#chat-box {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: white;
+  border-radius: 15px;
+  margin-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Abstand zwischen Nachrichten */
+}
+
+/* Gemeinsame Formatierung */
+.message {
+  width: 70%;                  /* Einheitliche Breite */
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word;
+  display: block;
+}
+
+/* Nutzer-Nachricht */
+.message.user {
+  background-color: #d9eaff;
+  align-self: flex-end;        /* Rechts ausgerichtet */
+  text-align: right;
+}
+
+/* Bot-Nachricht */
+.message.bot {
+  background-color: #eee;
+  align-self: flex-start;      /* Links ausgerichtet */
+  text-align: left;
+}
+
+#legal-links {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  font-size: 0.9em;
+  z-index: 1000;
+}
+
+#legal-links a {
+  color: #333;
+  text-decoration: none;
+  margin-left: 8px;
+}
+
+#legal-links a:hover {
+  text-decoration: underline;
+}

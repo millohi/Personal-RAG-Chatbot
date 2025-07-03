@@ -9,16 +9,21 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from ragbot.ragbot import RAGBot
+from backend.ragbot.ragbot import RAGBot
 #from dotenv import load_dotenv
 #print(load_dotenv())
 
-allowed_firmen = os.getenv("ALLOWED_CLIENTS")
-print(allowed_firmen)
-if not allowed_firmen:
-    allowed_firmen = "testfirma1"
-allowed_firmen_set = set(f.strip().lower() for f in allowed_firmen.split(",") if f.strip())
-
+# seperate codes
+codes_str = os.getenv("ALLOWED_CLIENTS", "")
+print(codes_str)
+if not codes_str:
+    codes_str = "testfirma1:1234"
+allowed_codes = dict()
+for item in codes_str.split(","):
+    if ":" in item:
+        firma, code = item.split(":", 1)
+        if firma.strip():
+            allowed_codes[firma.strip().lower()] = code.strip() if code.strip() else "default"
 # ------------------- #
 # Variables
 # ------------------- #
@@ -93,12 +98,13 @@ async def chat(request: Request):
     body = await request.json()
     question = body.get("query", "").strip()
     firma = body.get("firma", "").strip().lower()
+    code = body.get("code", "").strip()
 
     if not question or not firma:
         return JSONResponse(status_code=400, content={"error": "Bitte 'query' und 'firma' angeben."})
 
-    if firma not in allowed_firmen_set:
-        return JSONResponse(status_code=403, content={"error": "Firma nicht autorisiert."})
+    if allowed_codes.get(firma, False) and allowed_codes.get(firma) == code:
+        return JSONResponse(status_code=403, content={"error": "Nicht authorisiert."})
 
     answer = bot.call_chat(question)
     return {"answer": answer}

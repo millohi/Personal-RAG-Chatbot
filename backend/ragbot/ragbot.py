@@ -10,7 +10,7 @@ from langchain_core.messages import BaseMessage
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables.utils import Output
-from ragbot.core import build_chain, ClassicRetriever as Retriever
+from backend.ragbot.core import build_chain, ClassicRetriever as Retriever
 
 def load_and_split_markdown(docs_path: str):
     documents = []
