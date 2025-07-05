@@ -109,3 +109,13 @@ button:disabled {
 #legal-links a:hover {
   text-decoration: underline;
 }
+
+@keyframes blink {
+  0%, 100% { background-color: #5a4c4c; }
+  50% { background-color: #8b0000; }
+}
+
+button.blink {
+  animation: blink 0.8s ease-in-out 2;
+}
+

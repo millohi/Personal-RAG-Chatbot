@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Camillo-Chatbot</title>
+  <title>Demo ChatBot Camillo</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
   <div id="legal-links">
@@ -12,11 +13,11 @@
     <a href="datenschutz.html" target="_blank">Datenschutz</a>
   </div>
   <div class="chat-container">
-    <h1>Frag den Camillo-Bot</h1>
+    <h1>Chat with Camilo</h1>
     <div id="chat-box"></div>
     <div class="input-container">
       <input type="text" id="user-input" placeholder="Deine Frage..." />
-      <button id="submit" onclick="sendMessage()">Senden</button>
+      <button id="submit" onclick="sendMessage()" disabled>Senden</button>
     </div>
   </div>
   <script src="script.js"></script>
