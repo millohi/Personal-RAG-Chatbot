@@ -9,7 +9,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from backend.ragbot.ragbot import RAGBot
+from ragbot.ragbot import RAGBot
 #from dotenv import load_dotenv
 #print(load_dotenv())
 
@@ -37,6 +37,7 @@ document_dir = "./ragbot/docs/"
 app = FastAPI()
 limiter_global = Limiter(key_func=get_remote_address)  # IP-basiert
 limiter_firma = Limiter(key_func=lambda r: get_firma_key(r))  # Firmenbasiert
+
 
 app.add_middleware(SlowAPIMiddleware)
 app.state.limiter = limiter_global
