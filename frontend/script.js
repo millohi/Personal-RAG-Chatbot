@@ -49,7 +49,7 @@ document.getElementById("user-input").addEventListener("keydown", function (e) {
 });
 */
 
-let url = "https://api.camillo-dobrovsky.de";
+let url = "https://bot.camillo-dobrovsky.de";
 
 let accepted = false;
 let salutation = "";
@@ -180,7 +180,7 @@ function show_preferences() {
         "<label for=\"name-input\">Name (wird an OpenAI gesendet!): </label>" +
         "<input type=\"text\" id=\"name-input\" placeholder=\"Name (optional)\" />&emsp;" +
         "<button id=\"save-prechat\" onclick=\"save_preferences()\">Speichern</button></div>"+
-        "<div id='prechat-form-thanks' style='display:none'>Danke, die Wünsche wurden gespeichert und es kann losgehen!</div>"
+        "<div id='prechat-form-thanks' style='display:none'>Danke, die Wünsche wurden gespeichert und es kann losgehen!</br>Ich kann verschiedenste Fragen beantworten, z.B.: Was hat Camillo studiert? | Was ist Camillo am Arbeitsumfeld besonders wichtig? | Kannst du eine lustige Geschichte über Camillo erzählen?</div>"
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }

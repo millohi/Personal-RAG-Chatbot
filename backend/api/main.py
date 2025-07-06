@@ -9,6 +9,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from ragbot.ragbot import RAGBot
+from starlette.middleware.cors import CORSMiddleware
 
 codes_str = os.getenv("ALLOWED_CLIENTS", "")
 
@@ -28,13 +29,36 @@ document_dir = "./ragbot/docs"
 use_ragbot_per_company = True
 
 # -------------------- #
+# Rate-Limit Key for companies
+# -------------------- #
+
+def get_company_key(request: Request) -> str:
+    try:
+        body = request._json
+        comp = body.get("company", "").strip().lower()
+        if not comp:
+            return "company:unknown"
+        return f"company:{comp}"
+    except Exception:
+        return "company:fehler"
+
+# -------------------- #
 # init
 # -------------------- #
 
-app = FastAPI()
-limiter_company = Limiter(key_func=lambda r: get_company_key(r))
+limiter_company = Limiter(key_func=get_company_key)
 
+app = FastAPI()
+
+app.state.limiter = limiter_company
 app.add_middleware(SlowAPIMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://camillo-dobrovsky.de"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 # -------------------- #
 # ragbot instantiation
@@ -63,21 +87,6 @@ else:
         shutil.rmtree(database_path)
         os.makedirs(database_path)
     bot = RAGBot(docs_path=document_dir, db_dir=database_path)
-
-
-# -------------------- #
-# Rate-Limit Key for companies
-# -------------------- #
-
-def get_company_key(request: Request) -> str:
-    try:
-        body = request._json
-        comp = body.get("company", "").strip().lower()
-        if not comp:
-            return "company:unknown"
-        return f"company:{comp}"
-    except Exception:
-        return "company:fehler"
 
 
 # -------------------- #
@@ -116,7 +125,7 @@ async def chat(request: Request):
     if not question or not comp:
         return JSONResponse(status_code=400, content={"error": "Bitte 'query' und 'firma' angeben."})
 
-    if allowed_codes.get(comp, False) and allowed_codes.get(comp) == code:
+    if not allowed_codes.get(comp, False) or allowed_codes.get(comp) != code:
         return JSONResponse(status_code=403, content={"error": "Nicht authorisiert."})
 
     if use_ragbot_per_company:

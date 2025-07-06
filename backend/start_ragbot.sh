@@ -38,7 +38,7 @@ if [ "$CERT_EXISTS" = false ]; then
         --email deine@mail.de \
         --agree-tos \
         --no-eff-email \
-        -d api.camillo-dobrovsky.de
+        -d api.camillo-dobrovsky.de     # change here to correct DOMAIN
 
     if [ $? -ne 0 ]; then
         echo "❌ Certbot fehlgeschlagen. Abbruch."
@@ -58,4 +58,4 @@ docker compose down
 sleep 5
 docker compose up -d --build
 
-echo "✅ RAGBot läuft"
+echo "✅ RAGBot wird initialisiert und ist in wenigen Minuten verfügbar"
