@@ -79,13 +79,13 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 async function showIntroSequence() {
     addMessage("Hallo, willkommen beim KI-Chat. Die KI kann Fehler machen. Alle Fragen über ihn oder diese Anwendung beantwortet Camillo auch gerne im persönlichen Gespräch.", "bot");
-    await wait(1000);
+    await wait(2000);
 
     addMessage(
         `Ich bin mir bewusst, dass zur Bereitstellung des Chatbots meine Chat-Anfragen sowohl an einen weiteren Server (ZAP-Hosting) in Deutschland als auch die OpenAI-API übermittelt werden. Ich werde keine sensiblen oder anderweitig kritische Daten im Chat verwenden. Weitere Details gibt es in der <a href='datenschutz.html' target='_blank'>Datenschutzerklärung</a>.`,
         "bot"
     );
-    await wait(2000);
+    await wait(3000);
 
     askForConsent();
     const submitButton = document.getElementById("submit");
@@ -97,7 +97,7 @@ function askForConsent() {
 }
 
 function askForPreferences() {
-    addMessage("Kurze Frage zu Ansprache: Duzen oder Siezen? Und mit oder ohne Namen?", "bot");
+    addMessage("Danke. Noch zwei kurze Fragen zum Thema Anrede:", "bot");
     show_preferences()
     //document.getElementById("prechat-form").style.display = "flex";
 }
@@ -184,10 +184,10 @@ function show_preferences() {
     const chatBox = document.getElementById("chat-box");
     const msg = document.createElement("div");
     msg.classList.add("message", "bot");
-    msg.innerHTML = "<div id='prechat-form'><label><input type=\"radio\" name=\"salutation\" value=\"du\" id='='> Geduzt</label>&emsp;" +
-        "<label><input type=\"radio\" name=\"salutation\" value=\"sie\" checked> Gesiezt</label>&emsp;|&emsp;" +
-        "<label for=\"name-input\">Name (wird an OpenAI gesendet!): </label>" +
-        "<input type=\"text\" id=\"name-input\" placeholder=\"Name (optional)\" />&emsp;" +
+    msg.innerHTML = "<div id='prechat-form'><label><input type=\"radio\" name=\"salutation\" value=\"du\" id='='> Ich möchte geduzt werden.</label>&emsp;" +
+        "<label><input type=\"radio\" name=\"salutation\" value=\"sie\" checked> Ich möchte gesiezt werden.</label><br/><br/>" +
+        "<label for=\"name-input\">Name (falls gewünscht, wird an OpenAI gesendet): </label>" +
+        "<input type=\"text\" id=\"name-input\" placeholder=\"Name (optional)\" /></br><br/>" +
         "<button id=\"save-prechat\" onclick=\"save_preferences()\">Speichern</button></div>"+
         "<div id='prechat-form-thanks' style='display:none'>Danke, die Wünsche wurden gespeichert und es kann losgehen!</br>Ich kann verschiedenste Fragen beantworten, z.B.: Was hat Camillo studiert? | Was ist Camillo am Arbeitsumfeld besonders wichtig? | Kannst du eine lustige Geschichte über Camillo erzählen?</div>"
     chatBox.appendChild(msg);
