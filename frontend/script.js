@@ -158,11 +158,12 @@ async function sendMessage() {
                 username: userName
             })
         });
-        if (!response.ok) {
-            const { error } = await response.json();
-            throw new Error(error);
-        }
         const data = await response.json();
+        if (!response.ok) {
+            // Hole die Fehlermeldung aus "answer", oder fallback
+            const errorMsg = data.answer || "Unbekannter Fehler vom Server.";
+            throw new Error(errorMsg);
+        }
         addMessage(data.answer || "Fehler bei der Antwort.", "bot");
     } catch (err) {
         addMessage(err.message || "Fehler beim Verbinden zum Server.", "bot");

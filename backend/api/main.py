@@ -65,12 +65,13 @@ app.add_middleware(
 # -------------------- #
 if use_ragbot_per_company:
     company_bots = dict()
+    del_comps = []
     for company in allowed_codes.keys():
         c_database_path = os.path.join(database_path, company)
         c_document_dir = os.path.join(document_dir, company)
         if not os.path.exists(c_document_dir):
             print(f"WARNING: Didn't found company {company}. Removing from allowed client-list")
-            del allowed_codes[company]
+            del_comps.append(company)
             continue
         if not os.path.exists(c_database_path):
             os.makedirs(c_database_path)
@@ -80,6 +81,8 @@ if use_ragbot_per_company:
             os.makedirs(c_database_path)
         print(f"Init Ragbot for company {company}")
         company_bots[company] = RAGBot(docs_path=c_document_dir, db_dir=c_database_path)
+    for comp in del_comps:
+        del allowed_codes[comp]
 else:
     if not os.path.exists(database_path):
         os.makedirs(database_path)

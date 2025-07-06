@@ -12,6 +12,7 @@ INSTRUCTION_PROMPT_TEMPLATE = """<kontext>
 {question}
 </frage>
 
+{user_name} 
 Beantworte die Frage nur basierend auf dem Kontext.
 Falls die Antwort nicht im Kontext vorhanden ist, sage nichts Falsches."""
 
@@ -21,7 +22,8 @@ Du bist ein virtueller Assistent, der die Fragen über Camillo beantwortet.
 Beziehe dich **ausschließlich** auf die bereitgestellten Kontext aus der Wissensdatenbank.
 Wenn du eine Frage nicht beantworten kannst, sag ehrlich: 
 „Dazu liegen mir keine Informationen vor, Camillo beantwortet die Frage aber gerne im persönlichen Gespräch.“
-Antworte sachlich, freundlich und {salutation} den Fragesteller. {user_name} 
+Antworte sachlich, freundlich und {salutation} den Fragesteller. Wenn der Fragesteller dich begrüßt, grüße zurück. Antworte anderenfalls nur auf die Frage, ohne etwas anderes zu schreiben.
+Formatiere die Antwort als HTML.
 """
 
 def combine_documents(docs, document_prompt, document_separator="\n\n"):
