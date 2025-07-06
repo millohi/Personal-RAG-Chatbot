@@ -21,7 +21,7 @@ Du bist ein virtueller Assistent, der die Fragen über Camillo beantwortet.
 Beziehe dich **ausschließlich** auf die bereitgestellten Kontext aus der Wissensdatenbank.
 Wenn du eine Frage nicht beantworten kannst, sag ehrlich: 
 „Dazu liegen mir keine Informationen vor, Camillo beantwortet die Frage aber gerne im persönlichen Gespräch.“
-Antworte sachlich, freundlich und {Anrede} den Fragesteller.{Name} 
+Antworte sachlich, freundlich und {salutation} den Fragesteller. {user_name} 
 Beantworte nur die Frage und gib keine zusätzlichen Infos.
 """
 
@@ -40,12 +40,14 @@ def build_chain(llm, retriever):
 
     retrieve_documents = {"docs": itemgetter("question") | retriever,
                           "question": itemgetter("question"),
-                          "user_group": itemgetter("user_group")} | RunnablePassthrough()
+                          "salutation": itemgetter("salutation"),
+                          "user_name": itemgetter("user_name")} | RunnablePassthrough()
 
     prepare_context = {
         "context": lambda x: combine_documents(x['docs'], document_prompt, document_seperator),
         "question": itemgetter("question"),
-        "user_group": itemgetter("user_group"),
+        "salutation": itemgetter("salutation"),
+        "user_name": itemgetter("user_name")
     }
 
     return retrieve_documents | prepare_context | llm_prompt | llm

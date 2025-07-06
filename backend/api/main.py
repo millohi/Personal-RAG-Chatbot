@@ -5,86 +5,93 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from slowapi import Limiter
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from ragbot.ragbot import RAGBot
-#from dotenv import load_dotenv
-#print(load_dotenv())
 
-# seperate codes
 codes_str = os.getenv("ALLOWED_CLIENTS", "")
-print(codes_str)
+
 if not codes_str:
-    codes_str = "testfirma1:1234"
+    codes_str = "testcompany:1234"
 allowed_codes = dict()
 for item in codes_str.split(","):
     if ":" in item:
-        firma, code = item.split(":", 1)
-        if firma.strip():
-            allowed_codes[firma.strip().lower()] = code.strip() if code.strip() else "default"
+        company, code = item.split(":", 1)
+        if company.strip():
+            allowed_codes[company.strip().lower()] = code.strip() if code.strip() else "default"
 # ------------------- #
 # Variables
 # ------------------- #
 database_path = "./database"
-document_dir = "./ragbot/docs/"
+document_dir = "./ragbot/docs"
+use_ragbot_per_company = True
 
 # -------------------- #
-# Initialisierung
+# init
 # -------------------- #
 
 app = FastAPI()
-limiter_global = Limiter(key_func=get_remote_address)  # IP-basiert
-limiter_firma = Limiter(key_func=lambda r: get_firma_key(r))  # Firmenbasiert
-
+limiter_company = Limiter(key_func=lambda r: get_company_key(r))
 
 app.add_middleware(SlowAPIMiddleware)
-app.state.limiter = limiter_global
 
 # -------------------- #
-# Instanz des RAG-Bots
+# ragbot instantiation
 # -------------------- #
-if not os.path.exists(database_path):
-    os.makedirs(database_path)
+if use_ragbot_per_company:
+    company_bots = dict()
+    for company in allowed_codes.keys():
+        c_database_path = os.path.join(database_path, company)
+        c_document_dir = os.path.join(document_dir, company)
+        if not os.path.exists(c_database_path):
+            os.makedirs(c_database_path)
+        else:
+            print(f"Found existing DB for {company}, overwriting")
+            shutil.rmtree(c_database_path)
+            os.makedirs(c_database_path)
+        company_bots[company] = RAGBot(docs_path=c_document_dir, db_dir=c_database_path)
 else:
-    print("Found existing DB, overwriting")
-    shutil.rmtree(database_path)
-    os.makedirs(database_path)
-bot = RAGBot(docs_path=document_dir, db_dir=database_path)
+    if not os.path.exists(database_path):
+        os.makedirs(database_path)
+    else:
+        print("Found existing DB, overwriting")
+        shutil.rmtree(database_path)
+        os.makedirs(database_path)
+    bot = RAGBot(docs_path=document_dir, db_dir=database_path)
 
 
 # -------------------- #
-# Rate-Limit Key für Firmen
+# Rate-Limit Key for companies
 # -------------------- #
 
-def get_firma_key(request: Request) -> str:
+def get_company_key(request: Request) -> str:
     try:
-        body = request._json  # wird von slowapi gesetzt
-        firma = body.get("firma", "").strip().lower()
-        if not firma:
-            return "firma:unbekannt"
-        return f"firma:{firma}"
+        body = request._json
+        comp = body.get("company", "").strip().lower()
+        if not comp:
+            return "company:unknown"
+        return f"company:{comp}"
     except Exception:
-        return "firma:fehler"
+        return "company:fehler"
 
 
 # -------------------- #
-# Fehlerbehandlung
+# errorhandling
 # -------------------- #
 
 @app.exception_handler(RateLimitExceeded)
 async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
-    key = get_firma_key(request)
-    if key.startswith("firma:"):
-        msg = "Leider ist das Limit für diese Firma in dieser Stunde erreicht."
+    key = get_company_key(request)
+    if key.startswith("company:"):
+        msg = "Jede Anfrage an die OpenAI-API kostet Geld, wenn auch nur wenig. Leider musste Camillo, welcher aktuell noch armer Student ist, deswegen ein Anfragelimit setzen. Dieses ist aktuell erreicht, wird aber alle 24 h zurückgesetzt."
     else:
-        msg = "Leider ist das globale Anfrage-Limit für diese Stunde erreicht."
+        msg = "Jede Anfrage an die OpenAI-API kostet Geld, wenn auch nur wenig. Leider konnte Camillo, welcher aktuell noch armer Student ist, nicht unbegrenzt Geld auf sein OpenAI-Account einzahlen. Dieses Geld scheint nun aufgebraucht zu sein."
     return JSONResponse(status_code=429, content={"answer": msg})
 
 
 # -------------------- #
-# Endpunkte
+# endpoints
 # -------------------- #
 
 @app.get("/")
@@ -93,19 +100,23 @@ def root():
 
 
 @app.post("/chat")
-@limiter_global.limit("10/hour")
-@limiter_firma.limit("3/hour")
+@limiter_company.limit("20/day")
 async def chat(request: Request):
     body = await request.json()
     question = body.get("query", "").strip()
-    firma = body.get("firma", "").strip().lower()
+    comp = body.get("company", "").strip().lower()
     code = body.get("code", "").strip()
+    salutation = body.get("salutation", "Siezen").strip()
+    user_name = body.get("username", "").strip()
 
-    if not question or not firma:
+    if not question or not comp:
         return JSONResponse(status_code=400, content={"error": "Bitte 'query' und 'firma' angeben."})
 
-    if allowed_codes.get(firma, False) and allowed_codes.get(firma) == code:
+    if allowed_codes.get(comp, False) and allowed_codes.get(comp) == code:
         return JSONResponse(status_code=403, content={"error": "Nicht authorisiert."})
 
-    answer = bot.call_chat(question)
+    if use_ragbot_per_company:
+        answer = company_bots[comp].call_chat(question, salutation, user_name)
+    else:
+        answer = bot.call_chat(question, salutation, user_name)
     return {"answer": answer}

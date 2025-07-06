@@ -8,5 +8,6 @@ You need to set the domain-name of your api and the path to the .env in the foll
    - start_ragbot.sh: Set path to .env (1x) & domain (1x)
    - nginx/cert.conf: Set Domain (1x)
    - nginx/https.conf: Set Domain (4x)
-3. Use start_ragbot.sh to start the ragbot-api automatically.  
+3. Create your database in ragbot/docs/. You can use the empty knowledge-base.md or use any other .md file.
+4. Use start_ragbot.sh (after making it executable with chmod +x start_ragbot.sh) to start the ragbot-api automatically (this can take up to 10 minutes).  
 If everything works, you can use https://domain.de and should return the info that the ragbot is running. For requests use https://domain.de/chat to call the api. 

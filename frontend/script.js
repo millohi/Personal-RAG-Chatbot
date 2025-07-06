@@ -52,7 +52,7 @@ document.getElementById("user-input").addEventListener("keydown", function (e) {
 let url = "https://api.camillo-dobrovsky.de";
 
 let accepted = false;
-let anrede = "";
+let salutation = "";
 let userName = "";
 
 document.getElementById("user-input").addEventListener("keydown", function (e) {
@@ -95,11 +95,11 @@ function askForPreferences() {
 }
 
 function save_preferences() {
-    const selected = document.querySelector("input[name='anrede']:checked");
+    const selected = document.querySelector("input[name='salutation']:checked");
     if (selected.value === "sie") {
-        anrede = "Sieze"
+        salutation = "Sieze"
     } else {
-        anrede = "Duze"
+        salutation = "Duze"
     }
     userName = document.getElementById("name-input").value.trim();
     document.getElementById("prechat-form").style.display = "none";
@@ -126,7 +126,7 @@ async function sendMessage() {
         return;
     }
 
-    if (anrede === "") {
+    if (salutation === "") {
         const saveBtn = document.getElementById("save-prechat");
         saveBtn.classList.add("blink");
         setTimeout(() => saveBtn.classList.remove("blink"), 1000);
@@ -148,10 +148,10 @@ async function sendMessage() {
             },
             body: JSON.stringify({
                 query: userText,
-                firma: firma,
+                company: firma,
                 code: code,
-                anrede: anrede,
-                name: userName
+                salutation: salutation,
+                username: userName
             })
         });
         const data = await response.json();
@@ -175,8 +175,8 @@ function show_preferences() {
     const chatBox = document.getElementById("chat-box");
     const msg = document.createElement("div");
     msg.classList.add("message", "bot");
-    msg.innerHTML = "<div id='prechat-form'><label><input type=\"radio\" name=\"anrede\" value=\"du\" id='='> Geduzt</label>&emsp;" +
-        "<label><input type=\"radio\" name=\"anrede\" value=\"sie\" checked> Gesiezt</label>&emsp;|&emsp;" +
+    msg.innerHTML = "<div id='prechat-form'><label><input type=\"radio\" name=\"salutation\" value=\"du\" id='='> Geduzt</label>&emsp;" +
+        "<label><input type=\"radio\" name=\"salutation\" value=\"sie\" checked> Gesiezt</label>&emsp;|&emsp;" +
         "<label for=\"name-input\">Name (wird an OpenAI gesendet!): </label>" +
         "<input type=\"text\" id=\"name-input\" placeholder=\"Name (optional)\" />&emsp;" +
         "<button id=\"save-prechat\" onclick=\"save_preferences()\">Speichern</button></div>"+
