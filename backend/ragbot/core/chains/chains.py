@@ -22,7 +22,6 @@ Beziehe dich **ausschließlich** auf die bereitgestellten Kontext aus der Wissen
 Wenn du eine Frage nicht beantworten kannst, sag ehrlich: 
 „Dazu liegen mir keine Informationen vor, Camillo beantwortet die Frage aber gerne im persönlichen Gespräch.“
 Antworte sachlich, freundlich und {salutation} den Fragesteller. {user_name} 
-Beantworte nur die Frage und gib keine zusätzlichen Infos.
 """
 
 def combine_documents(docs, document_prompt, document_separator="\n\n"):
