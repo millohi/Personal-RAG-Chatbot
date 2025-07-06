@@ -54,7 +54,7 @@ app.state.limiter = limiter_company
 app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://camillo-dobrovsky.de"],
+    allow_origins=["https://camillo-dobrovsky.de"],     # DOMAIN of frontend or *
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
