@@ -49,11 +49,14 @@ document.getElementById("user-input").addEventListener("keydown", function (e) {
 });
 */
 
-let url = "https://bot.camillo-dobrovsky.de";
+let url = "https://bot.camillo-dobrovsky.de/chat";
 
 let accepted = false;
 let salutation = "";
 let userName = "";
+const params = new URLSearchParams(window.location.search);
+const firma = params.get('firma');
+const code = params.get('code');
 
 document.getElementById("user-input").addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
@@ -66,7 +69,12 @@ document.getElementById("user-input").addEventListener("keydown", function (e) {
 
 window.addEventListener("DOMContentLoaded", async () => {
     accepted = false;
-    await showIntroSequence();
+    if (!firma || !code) {
+        addMessage("Fehler, leider konnte die Session nicht autorisiert werden", "bot");
+    }
+    else {
+        await showIntroSequence();
+    }
 });
 
 async function showIntroSequence() {
@@ -136,10 +144,6 @@ async function sendMessage() {
     addMessage(userText, "user");
 
     submitButton.disabled = true;
-    const params = new URLSearchParams(window.location.search);
-    const firma = params.get('firma');
-    const code = params.get('code');
-
     try {
         const response = await fetch(url, {
             method: "POST",
@@ -154,10 +158,14 @@ async function sendMessage() {
                 username: userName
             })
         });
+        if (!response.ok) {
+            const { error } = await response.json();
+            throw new Error(error);
+        }
         const data = await response.json();
-        addMessage(data.response || "Fehler bei der Antwort.", "bot");
+        addMessage(data.answer || "Fehler bei der Antwort.", "bot");
     } catch (err) {
-        addMessage("Fehler beim Verbinden zum Server.", "bot");
+        addMessage(err.message || "Fehler beim Verbinden zum Server.", "bot");
     }
     submitButton.disabled = false;
 }

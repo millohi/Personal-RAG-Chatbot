@@ -33,8 +33,6 @@ def load_and_split_markdown(docs_path: str):
             metadata_string = " -> ".join(chunk.metadata.values())
             chunk.page_content = metadata_string + "\n" + chunk.page_content
             split_docs.append(chunk)
-            print(chunk)
-            print("--------------")
 
     return split_docs
 
@@ -74,12 +72,12 @@ class RAGBot:
 
         self._chain = build_chain(self.llm, self.retriever)
 
-    def call_chat(self, query: str, salutation: str, user_name: str) -> BaseMessage:
+    def call_chat(self, query: str, salutation: str, user_name: str) -> str:
         """Calls a chatmessage from LLM"""
         if user_name:
             user_name = f"Der Name vom Fragesteller lautet: {user_name}"
         input_message = {"question": query, "salutation": salutation, "user_name": user_name}
-        return self._chain.invoke(input_message, RAGBot.stream_config)
+        return self._chain.invoke(input_message, RAGBot.stream_config).content
 
     def stream_chat(self, query: str, salutation: str, user_name: str) -> Iterator[Output]:
         """Streams a chatmessage from an LLM"""

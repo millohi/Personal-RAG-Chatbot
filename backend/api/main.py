@@ -78,6 +78,7 @@ if use_ragbot_per_company:
             print(f"Found existing DB for {company}, overwriting")
             shutil.rmtree(c_database_path)
             os.makedirs(c_database_path)
+        print(f"Init Ragbot for company {company}")
         company_bots[company] = RAGBot(docs_path=c_document_dir, db_dir=c_database_path)
 else:
     if not os.path.exists(database_path):
@@ -86,7 +87,9 @@ else:
         print("Found existing DB, overwriting")
         shutil.rmtree(database_path)
         os.makedirs(database_path)
+    print("Init Ragbot")
     bot = RAGBot(docs_path=document_dir, db_dir=database_path)
+print("Finished RAGBot init")
 
 
 # -------------------- #
@@ -126,7 +129,7 @@ async def chat(request: Request):
         return JSONResponse(status_code=400, content={"error": "Bitte 'query' und 'firma' angeben."})
 
     if not allowed_codes.get(comp, False) or allowed_codes.get(comp) != code:
-        return JSONResponse(status_code=403, content={"error": "Nicht authorisiert."})
+        return JSONResponse(status_code=403, content={"error": "Nicht autorisierter Zugriff. Bitte Firma & Code in der URL überprüfen."})
 
     if use_ragbot_per_company:
         answer = company_bots[comp].call_chat(question, salutation, user_name)
