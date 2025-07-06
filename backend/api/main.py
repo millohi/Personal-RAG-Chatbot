@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 
 from fastapi import FastAPI, Request
@@ -94,6 +95,16 @@ else:
     bot = RAGBot(docs_path=document_dir, db_dir=database_path)
 print("Finished RAGBot init")
 
+def extract_html_content(response_text: str) -> str:
+    codeblock_match = re.search(r"```html\s*(.*?)\s*```", response_text, re.DOTALL)
+    if codeblock_match:
+        return codeblock_match.group(1).strip()
+
+    html_like_match = re.search(r"(<(html|div|section|table|ul|ol|p|span|h1|h2|h3|h4|h5|h6)[\s>].*?)$", response_text, re.DOTALL | re.IGNORECASE)
+    if html_like_match:
+        return html_like_match.group(1).strip()
+
+    return response_text.strip()
 
 # -------------------- #
 # errorhandling
@@ -138,4 +149,4 @@ async def chat(request: Request):
         answer = company_bots[comp].call_chat(question, salutation, user_name)
     else:
         answer = bot.call_chat(question, salutation, user_name)
-    return {"answer": answer}
+    return {"answer": extract_html_content(answer)}
