@@ -44,6 +44,10 @@ if use_ragbot_per_company:
     for company in allowed_codes.keys():
         c_database_path = os.path.join(database_path, company)
         c_document_dir = os.path.join(document_dir, company)
+        if not os.path.exists(c_document_dir):
+            print(f"WARNING: Didn't found company {company}. Removing from allowed client-list")
+            del allowed_codes[company]
+            continue
         if not os.path.exists(c_database_path):
             os.makedirs(c_database_path)
         else:
