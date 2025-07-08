@@ -13,12 +13,15 @@ from langchain_core.runnables.utils import Output
 from ragbot.core import build_chain, ClassicRetriever as Retriever
 
 
-def load_and_split_markdown(docs_path: str):
+def load_and_split_markdown(docs_paths: str | list[str]):
     documents = []
-    for path in os.listdir(docs_path):
-        if path.endswith(".md"):
-            with open(os.path.join(docs_path, path), "r", encoding="utf-8") as f:
-                documents.append(f.read())
+    if isinstance(docs_paths, str):
+        docs_paths = [docs_paths,]
+    for docs_path in docs_paths:
+        for path in os.listdir(docs_path):
+            if path.endswith(".md"):
+                with open(os.path.join(docs_path, path), "r", encoding="utf-8") as f:
+                    documents.append(f.read())
 
     splitter = MarkdownHeaderTextSplitter(headers_to_split_on=[
         ("#", "Dokument"),
@@ -55,7 +58,7 @@ class RAGBot:
 
     def __init__(self,
                  # Basic RAG settings
-                 docs_path: str = "./docs",
+                 docs_path: str | list[str] = "./docs", # path to directory of knowledge-files or list of paths to directories
                  db_dir="./../database"):
         """
         Initializes the RAGBot with the given parameters.
@@ -67,7 +70,7 @@ class RAGBot:
         self.retriever = Retriever(k=3, vectordb=self.vectorstore)
         self.llm = self._llm = ChatOpenAI(
             streaming=True,
-            temperature=0.5,
+            temperature=1,
             model="gpt-4o-mini")
 
         self._chain = build_chain(self.llm, self.retriever)
