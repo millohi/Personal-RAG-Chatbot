@@ -144,6 +144,7 @@ async def chat(request: Request):
     code = body.get("code", "").strip()
     salutation = body.get("salutation", "Siezen").strip()
     user_name = body.get("username", "").strip()
+    first_time = body.get("first_time", False)
 
     if not question or not comp:
         return JSONResponse(status_code=400, content={"error": "Bitte 'query' und 'company' angeben."})
@@ -153,8 +154,8 @@ async def chat(request: Request):
 
     total_req = log_request(comp)
     if use_ragbot_per_company:
-        answer = company_bots[comp].call_chat(question, salutation, user_name, total_req==1)
+        answer = company_bots[comp].call_chat(question, salutation, user_name, first_time)
     else:
-        answer = bot.call_chat(question, salutation, user_name, total_req==1)
+        answer = bot.call_chat(question, salutation, user_name, first_time)
     print(f"Company {comp} now has {total_req} total requests.")
     return {"answer": extract_html_content(answer)}
