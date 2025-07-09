@@ -35,9 +35,10 @@ def log_request(company: str) -> int:
 
     if row:
         new_count = row[0] + 1
+        cursor.execute("UPDATE request_count SET count = ? WHERE company = ?", (new_count, company))
     else:
         new_count = 1
-    cursor.execute("INSERT INTO request_count (count, company) VALUES (?, ?)", (new_count, company))
+        cursor.execute("INSERT INTO request_count (company, count) VALUES (?, ?)", (company, new_count))
 
     conn.commit()
     conn.close()

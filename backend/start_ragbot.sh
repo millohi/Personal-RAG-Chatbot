@@ -24,7 +24,7 @@ sleep 5
 # # change here to correct DOMAIN
 echo "🔍 Prüfe ob Zertifikat im Volume vorhanden ist..."
 docker run --rm -v certbot-etc:/etc/letsencrypt alpine sh -c \
-    '[ -f /etc/letsencrypt/live/request_counter.camillo-dobrovsky.de/fullchain.pem ]' && CERT_EXISTS=true || CERT_EXISTS=false
+    '[ -f /etc/letsencrypt/live/bot.camillo-dobrovsky.de/fullchain.pem ]' && CERT_EXISTS=true || CERT_EXISTS=false
 if [ "$CERT_EXISTS" = false ]; then
 
     echo "🔐 Kein Zertifikat gefunden. Starte Certbot... $CERT_PATH"
@@ -38,7 +38,7 @@ if [ "$CERT_EXISTS" = false ]; then
         --email deine@mail.de \
         --agree-tos \
         --no-eff-email \
-        -d request_counter.camillo-dobrovsky.de     # change here to correct DOMAIN
+        -d bot.camillo-dobrovsky.de     # change here to correct DOMAIN
 
     if [ $? -ne 0 ]; then
         echo "❌ Certbot fehlgeschlagen. Abbruch."

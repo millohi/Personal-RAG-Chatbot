@@ -153,7 +153,8 @@ async def chat(request: Request):
 
     total_req = log_request(comp)
     if use_ragbot_per_company:
-        answer = company_bots[comp].call_chat(question, salutation, user_name)
+        answer = company_bots[comp].call_chat(question, salutation, user_name, total_req==1)
     else:
-        answer = bot.call_chat(question, salutation, user_name)
+        answer = bot.call_chat(question, salutation, user_name, total_req==1)
+    print(f"Company {comp} now has {total_req} total requests.")
     return {"answer": extract_html_content(answer)}

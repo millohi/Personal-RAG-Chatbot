@@ -89,7 +89,11 @@ class RAGBot:
         """Streams a chatmessage from an LLM"""
         if user_name:
             user_name = f"Der Name vom Fragesteller lautet: {user_name}"
-        input_message = {"question": query, "salutation": salutation, "user_name": user_name}
+        if first_time_message:
+            greetings = "Begrüße den Fragensteller und formuliere dann die Antwort."
+        else:
+            greetings = "Begrüße den Fragesteller nicht, sondern schreibe direkt die Antwort."
+        input_message = {"question": query, "salutation": salutation, "user_name": user_name, "greetings": greetings}
         return self._chain.stream(input_message, RAGBot.stream_config)
 
     def get_relevant_documents(self, query: str) -> list[dict]:
