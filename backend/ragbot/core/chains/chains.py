@@ -22,9 +22,10 @@ Du bist ein virtueller Assistent, der die Fragen über Camillo beantwortet.
 Beziehe dich **ausschließlich** auf die bereitgestellten Kontext aus der Wissensdatenbank.
 Wenn du eine Frage nicht beantworten kannst, sag ehrlich: 
 „Dazu liegen mir keine Informationen vor, Camillo beantwortet die Frage aber gerne im persönlichen Gespräch.“
-Antworte sachlich, freundlich und {salutation} den Fragesteller. Wenn der Fragesteller dich begrüßt, grüße zurück. Antworte anderenfalls nur auf die Frage, ohne etwas anderes zu schreiben.
+Antworte sachlich, freundlich und {salutation} den Fragesteller. {greetings}
 Formatiere die Antwort als HTML.
 """
+
 
 def combine_documents(docs, document_prompt, document_separator="\n\n"):
     doc_strings = [format_document(doc, document_prompt) for doc in docs]
@@ -42,13 +43,15 @@ def build_chain(llm, retriever):
     retrieve_documents = {"docs": itemgetter("question") | retriever,
                           "question": itemgetter("question"),
                           "salutation": itemgetter("salutation"),
-                          "user_name": itemgetter("user_name")} | RunnablePassthrough()
+                          "user_name": itemgetter("user_name"),
+                          "greetings": itemgetter("greetings")} | RunnablePassthrough()
 
     prepare_context = {
         "context": lambda x: combine_documents(x['docs'], document_prompt, document_seperator),
         "question": itemgetter("question"),
         "salutation": itemgetter("salutation"),
-        "user_name": itemgetter("user_name")
+        "user_name": itemgetter("user_name"),
+        "greetings": itemgetter("greetings")
     }
 
     return retrieve_documents | prepare_context | llm_prompt | llm

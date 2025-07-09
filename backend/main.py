@@ -10,12 +10,15 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from ragbot.ragbot import RAGBot
+from api.db_logger import init_db, log_request
 from starlette.middleware.cors import CORSMiddleware
 
+from dotenv import load_dotenv
+load_dotenv()
 codes_str = os.getenv("ALLOWED_CLIENTS", "")
 
 if not codes_str:
-    codes_str = "testcompany:1234"
+    codes_str = "testcompany1:1234"
 allowed_codes = dict()
 for item in codes_str.split(","):
     if ":" in item:
@@ -47,6 +50,7 @@ def get_company_key(request: Request) -> str:
 # init
 # -------------------- #
 
+init_db()
 limiter_company = Limiter(key_func=get_company_key)
 
 app = FastAPI()
@@ -81,7 +85,7 @@ if use_ragbot_per_company:
             shutil.rmtree(c_database_path)
             os.makedirs(c_database_path)
         print(f"Init Ragbot for company {company}")
-        company_bots[company] = RAGBot(docs_path=c_document_dir, db_dir=c_database_path)
+        company_bots[company] = RAGBot(docs_path=[document_dir,c_document_dir], db_dir=c_database_path)
     for comp in del_comps:
         del allowed_codes[comp]
 else:
@@ -140,11 +144,12 @@ async def chat(request: Request):
     user_name = body.get("username", "").strip()
 
     if not question or not comp:
-        return JSONResponse(status_code=400, content={"error": "Bitte 'query' und 'firma' angeben."})
+        return JSONResponse(status_code=400, content={"error": "Bitte 'query' und 'company' angeben."})
 
     if not allowed_codes.get(comp, False) or allowed_codes.get(comp) != code:
         return JSONResponse(status_code=403, content={"error": "Nicht autorisierter Zugriff. Bitte Firma & Code in der URL überprüfen."})
 
+    total_req = log_request(comp)
     if use_ragbot_per_company:
         answer = company_bots[comp].call_chat(question, salutation, user_name)
     else:

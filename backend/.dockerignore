@@ -18,3 +18,4 @@ local_data
 # Sonstiges
 .DS_Store
 database
+*.db

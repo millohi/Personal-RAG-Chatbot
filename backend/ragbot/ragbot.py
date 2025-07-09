@@ -6,7 +6,6 @@ from langchain_chroma import Chroma
 
 from typing import Iterator
 
-from langchain_core.messages import BaseMessage
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables.utils import Output
@@ -75,14 +74,18 @@ class RAGBot:
 
         self._chain = build_chain(self.llm, self.retriever)
 
-    def call_chat(self, query: str, salutation: str, user_name: str) -> str:
+    def call_chat(self, query: str, salutation: str, user_name: str, first_time_message:bool=False) -> str:
         """Calls a chatmessage from LLM"""
         if user_name:
             user_name = f"Der Name vom Fragesteller lautet: {user_name}"
-        input_message = {"question": query, "salutation": salutation, "user_name": user_name}
+        if first_time_message:
+            greetings = "Begrüße den Fragensteller und formuliere dann die Antwort."
+        else:
+            greetings = "Begrüße den Fragesteller nicht, sondern schreibe direkt die Antwort."
+        input_message = {"question": query, "salutation": salutation, "user_name": user_name, "greetings": greetings}
         return self._chain.invoke(input_message, RAGBot.stream_config).content
 
-    def stream_chat(self, query: str, salutation: str, user_name: str) -> Iterator[Output]:
+    def stream_chat(self, query: str, salutation: str, user_name: str, first_time_message:bool=False) -> Iterator[Output]:
         """Streams a chatmessage from an LLM"""
         if user_name:
             user_name = f"Der Name vom Fragesteller lautet: {user_name}"

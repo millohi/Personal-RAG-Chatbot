@@ -202,3 +202,4 @@ local_data
 .DS_Store
 .private*
 database/
+*.db

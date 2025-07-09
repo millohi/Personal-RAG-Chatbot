@@ -17,5 +17,5 @@ COPY . .
 EXPOSE 8000
 
 # Startbefehl
-# CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-exclude", ".venv", "--reload-exclude", "database"]
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-exclude", ".venv", "--reload-exclude", "database"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

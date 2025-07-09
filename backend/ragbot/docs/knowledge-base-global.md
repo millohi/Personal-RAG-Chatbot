@@ -1,2 +1,2 @@
 # Globale Wissensbasis
-Diese wird nur genutzt, wenn nicht jede Company einen extra RagBot bekommt.
+Diese wird immer für jeden RagBot genutzt.
