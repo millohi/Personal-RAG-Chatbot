@@ -10,11 +10,11 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from ragbot.ragbot import RAGBot
-from api.db_logger import init_db, log_request
+from request_counter.db_logger import init_db, log_request
 from starlette.middleware.cors import CORSMiddleware
 
-from dotenv import load_dotenv
-load_dotenv()
+#from dotenv import load_dotenv
+#load_dotenv()
 codes_str = os.getenv("ALLOWED_CLIENTS", "")
 
 if not codes_str:
@@ -28,7 +28,8 @@ for item in codes_str.split(","):
 # ------------------- #
 # Variables
 # ------------------- #
-database_path = "./database"
+vector_database_dir = "./database"
+request_log_db_dir = "./request_log"
 document_dir = "./ragbot/docs"
 use_ragbot_per_company = True
 
@@ -50,7 +51,7 @@ def get_company_key(request: Request) -> str:
 # init
 # -------------------- #
 
-init_db()
+init_db(os.path.join(request_log_db_dir, "request_log.db"))
 limiter_company = Limiter(key_func=get_company_key)
 
 app = FastAPI()
@@ -72,7 +73,7 @@ if use_ragbot_per_company:
     company_bots = dict()
     del_comps = []
     for company in allowed_codes.keys():
-        c_database_path = os.path.join(database_path, company)
+        c_database_path = os.path.join(vector_database_dir, company)
         c_document_dir = os.path.join(document_dir, company)
         if not os.path.exists(c_document_dir):
             print(f"WARNING: Didn't found company {company}. Removing from allowed client-list")
@@ -89,14 +90,15 @@ if use_ragbot_per_company:
     for comp in del_comps:
         del allowed_codes[comp]
 else:
-    if not os.path.exists(database_path):
-        os.makedirs(database_path)
+    vector_db_path = os.path.join(vector_database_dir, "vector")
+    if not os.path.exists(vector_db_path):
+        os.makedirs(vector_db_path)
     else:
         print("Found existing DB, overwriting")
-        shutil.rmtree(database_path)
-        os.makedirs(database_path)
+        shutil.rmtree(vector_db_path)
+        os.makedirs(vector_db_path)
     print("Init Ragbot")
-    bot = RAGBot(docs_path=document_dir, db_dir=database_path)
+    bot = RAGBot(docs_path=document_dir, db_dir=vector_db_path)
 print("Finished RAGBot init")
 
 def extract_html_content(response_text: str) -> str:

@@ -203,3 +203,4 @@ local_data
 .private*
 database/
 *.db
+request_log

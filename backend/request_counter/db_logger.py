@@ -1,9 +1,11 @@
 import sqlite3
+import os
 
-DB_PATH = "request_log.db"
+DB_PATH = ""
 
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
+def init_db(db_path="request_log.db"):
+    global DB_PATH
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS request_count (
@@ -13,8 +15,11 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+    DB_PATH = db_path
 
 def log_request(company: str) -> int:
+    if not os.path.exists(DB_PATH):
+        return 0
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
