@@ -54,6 +54,7 @@ let url = "https://bot.camillo-dobrovsky.de/chat";
 let accepted = false;
 let salutation = "";
 let userName = "";
+let first_message = true;
 const params = new URLSearchParams(window.location.search);
 const firma = params.get('firma');
 const code = params.get('code');
@@ -155,7 +156,8 @@ async function sendMessage() {
                 company: firma,
                 code: code,
                 salutation: salutation,
-                username: userName
+                username: userName,
+                first_time: first_message,
             })
         });
         const data = await response.json();
@@ -165,6 +167,7 @@ async function sendMessage() {
             throw new Error(errorMsg);
         }
         addMessage(data.answer || "Fehler bei der Antwort.", "bot");
+        first_message = false;
     } catch (err) {
         addMessage(err.message || "Fehler beim Verbinden zum Server.", "bot");
     }
