@@ -1,3 +1,5 @@
+import shutil
+import datetime
 import sqlite3
 import os
 
@@ -5,6 +7,10 @@ DB_PATH = ""
 
 def init_db(db_path="request_log.db"):
     global DB_PATH
+    if os.path.dirname(db_path) != "" and not os.path.exists(os.path.dirname(db_path)):
+        os.makedirs(os.path.dirname(db_path))
+    elif os.path.exists(db_path):
+        shutil.move(db_path, db_path+datetime.datetime.now().strftime("%Y%m%d%H%M%S")+".archiv")
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("""

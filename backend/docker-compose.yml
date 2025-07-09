@@ -8,6 +8,8 @@ services:
       - ALLOWED_CLIENTS=${ALLOWED_CLIENTS}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     restart: always
+    volumes:
+      - ./request_log:/app/request_log
 
   nginx:
     image: nginx:latest
