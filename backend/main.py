@@ -9,7 +9,7 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from ragbot.ragbot import RAGBot
+from ragbot.bot import RAGBot
 from request_counter.db_logger import init_db, log_request
 from starlette.middleware.cors import CORSMiddleware
 
