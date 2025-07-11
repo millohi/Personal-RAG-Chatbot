@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ENV_FILE="../../../private_data/.env"
+ENV_FILE="../../private_data/.env"
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [ ! -f "$ENV_FILE" ]; then
