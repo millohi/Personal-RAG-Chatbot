@@ -58,7 +58,7 @@ class RAGBot:
     def __init__(self,
                  # Basic RAG settings
                  docs_path: str | list[str] = "./docs", # path to directory of knowledge-files or list of paths to directories
-                 db_dir="./../database"):
+                 db_dir="./database"):
         """
         Initializes the RAGBot with the given parameters.
         """
