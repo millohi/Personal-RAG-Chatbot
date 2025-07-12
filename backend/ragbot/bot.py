@@ -11,11 +11,15 @@ from langchain_openai import ChatOpenAI
 from langchain_core.runnables.utils import Output
 from ragbot.core import build_chain, ClassicRetriever as Retriever
 
+# embedding_func = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+embedding_func = HuggingFaceEmbeddings(model_name="mixedbread-ai/deepset-mxbai-embed-de-large-v1")
+openai_api = ChatOpenAI(streaming=True, temperature=1, model="gpt-4o-mini")
+
 
 def load_and_split_markdown(docs_paths: str | list[str]):
     documents = []
     if isinstance(docs_paths, str):
-        docs_paths = [docs_paths,]
+        docs_paths = [docs_paths, ]
     for docs_path in docs_paths:
         for path in os.listdir(docs_path):
             if path.endswith(".md"):
@@ -57,24 +61,20 @@ class RAGBot:
 
     def __init__(self,
                  # Basic RAG settings
-                 docs_path: str | list[str] = "./docs", # path to directory of knowledge-files or list of paths to directories
+                 docs_path: str | list[str] = "./docs",
+                 # path to directory of knowledge-files or list of paths to directories
                  db_dir="./database"):
         """
         Initializes the RAGBot with the given parameters.
         """
-        self.embedding_function = HuggingFaceEmbeddings(model_name="mixedbread-ai/deepset-mxbai-embed-de-large-v1")
         # self.embedding_function = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
         self.documents = load_and_split_markdown(docs_path)
-        self.vectorstore = _load_or_create_vectorstore(self.documents, self.embedding_function, db_dir)
+        self.vectorstore = _load_or_create_vectorstore(self.documents, embedding_func, db_dir)
         self.retriever = Retriever(k=3, vectordb=self.vectorstore)
-        self.llm = self._llm = ChatOpenAI(
-            streaming=True,
-            temperature=1,
-            model="gpt-4o-mini")
 
-        self._chain = build_chain(self.llm, self.retriever)
+        self._chain = build_chain(openai_api, self.retriever)
 
-    def call_chat(self, query: str, salutation: str, user_name: str, first_time_message:bool=False) -> str:
+    def call_chat(self, query: str, salutation: str, user_name: str, first_time_message: bool = False) -> str:
         """Calls a chatmessage from LLM"""
         if user_name:
             user_name = f"Der Name vom Fragesteller lautet: {user_name}"
@@ -85,7 +85,8 @@ class RAGBot:
         input_message = {"question": query, "salutation": salutation, "user_name": user_name, "greetings": greetings}
         return self._chain.invoke(input_message, RAGBot.stream_config).content
 
-    def stream_chat(self, query: str, salutation: str, user_name: str, first_time_message:bool=False) -> Iterator[Output]:
+    def stream_chat(self, query: str, salutation: str, user_name: str, first_time_message: bool = False) -> Iterator[
+        Output]:
         """Streams a chatmessage from an LLM"""
         if user_name:
             user_name = f"Der Name vom Fragesteller lautet: {user_name}"
