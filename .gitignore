@@ -201,6 +201,7 @@ local_data
 # Sonstiges
 .DS_Store
 .private*
+**.private**
 database/
 *.db
 request_log
