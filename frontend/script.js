@@ -51,6 +51,7 @@ document.getElementById("user-input").addEventListener("keydown", function (e) {
 
 let url = "https://bot.camillo-dobrovsky.de/chat";
 
+const MAINTENANCE = false;
 let accepted = false;
 let salutation = "";
 let userName = "";
@@ -70,13 +71,21 @@ document.getElementById("user-input").addEventListener("keydown", function (e) {
 
 window.addEventListener("DOMContentLoaded", async () => {
     accepted = false;
-    if (!firma || !code) {
-        addMessage("Fehler, leider konnte die Session nicht autorisiert werden", "bot");
+    if (MAINTENANCE){
+        showMaintenance()
     }
     else {
-        await showIntroSequence();
+        if (!firma || !code) {
+            addMessage("Fehler, leider konnte die Session nicht autorisiert werden", "bot");
+        } else {
+            await showIntroSequence();
+        }
     }
 });
+
+function showMaintenance() {
+    addMessage("Hallo, der ChatBot bekommt gerade ein Update. In spätestens 5 Minuten ist er wieder erreichbar!", "bot");
+}
 
 async function showIntroSequence() {
     addMessage("Hallo, willkommen beim KI-Chat. Die KI kann Fehler machen. Alle Fragen über ihn oder diese Anwendung beantwortet Camillo auch gerne im persönlichen Gespräch.", "bot");
